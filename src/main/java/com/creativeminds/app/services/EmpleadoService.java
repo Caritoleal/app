@@ -2,48 +2,42 @@ package com.creativeminds.app.services;
 
 import com.creativeminds.app.model.Empleado;
 import com.creativeminds.app.repositories.EmpleadoRepository;
-import com.nimbusds.oauth2.sdk.GeneralException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class EmpleadoService {
     @Autowired
     EmpleadoRepository empleadoRepository;
 
-    // lista todos los empleados
     public List<Empleado> getAllEmpleado() {
-        List<Empleado> empleadoList = new ArrayList<>();
-        empleadoRepository.findAll().forEach(empleado -> empleadoList.add(empleado));
-        return empleadoList;
+        List<Empleado> list = new ArrayList<>();
+        empleadoRepository.findAll().forEach(empleado -> list.add(empleado));
+        return list;
     }
 
-    // Me busca pero me permite que no solo me devuelva un empleado sino lo que encuentre
-    public Optional<Empleado> getEmpleadoByID(Integer id) {
-           return empleadoRepository.findById(id);
-        }
-
-        public ArrayList<Empleado> obtenerPorEmpresa(Integer id){
-        return empleadoRepository.findByEmpresa(id);
+    public Empleado getEmpleadoByID(Integer id) {
+        return empleadoRepository.findById(id).get();
     }
 
     //Metodo para guardar y actualizar
-    public Empleado saveorUpdateEmpleado(Empleado empleado) {
-        return empleadoRepository.save(empleado);
+    public boolean saveorUpdateEmpleado(Empleado empleado) {
+        Empleado tmp_emp = empleadoRepository.save(empleado);
+        if (empleadoRepository.findById(tmp_emp.getId()) != null) {
+            return true;
+        }
+        return false;
     }
 
     public boolean deleteEmpleado(Integer id) {
         empleadoRepository.deleteById(id);
-        if(this.empleadoRepository.findById(id).isPresent()){
+        if (getEmpleadoByID(id) != null) {
             return false;
         }
-    return true;
-
+        return true;
     }
 
 }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class EmpresaService {
@@ -20,26 +19,24 @@ public class EmpresaService {
         return list;
     }
 
-    public Optional<Empresa> getEmpresaByID(Integer id){
-        return empresaRepository.findById(id);
+    public Empresa getEmpresaByID(Integer id){
+        return empresaRepository.findById(id).get();
     }
 
     //Metodo para guardar y actualizar
-    public Optional<Empresa> saveorUpdateEmpresa (Empresa empresa){
+    public boolean saveorUpdateEmpresa (Empresa empresa){
         Empresa tmp_emp = empresaRepository.save(empresa);
-        return empresaRepository.findById(tmp_emp.getId());
+        if(empresaRepository.findById(tmp_emp.getId()) != null){
+            return true;
+        }
+        return false;
     }
 
     public boolean deleteEmpresa(Integer id){
-        if(getEmpresaByID(id).isPresent()){
-            empresaRepository.deleteById(id);
-            if(getEmpresaByID(id).isPresent()){
-                return false;
-            }else{
-                return true;
-            }
-        }else {
+        empresaRepository.deleteById(id);
+        if(getEmpresaByID(id)!= null){
             return false;
         }
+        return true;
     }
 }
